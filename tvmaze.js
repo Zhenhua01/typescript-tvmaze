@@ -12778,6 +12778,7 @@ var $ = __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"
 var $showsList = $("#showsList");
 var $episodesArea = $("#episodesArea");
 var $searchForm = $("#searchForm");
+var $episodesList = $('#episodesList');
 var MISSING_IMAGE_URL = "https://tinyurl.com/missing-tv";
 var TVMAZE_API_URL = "http://api.tvmaze.com/";
 /** Given a search term, search for tv shows that match that query.
@@ -12860,9 +12861,60 @@ $searchForm.on("submit", function (evt) {
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
-// async function getEpisodesOfShow(id) { }
-/** Write a clear docstring for this function... */
-// function populateEpisodes(episodes) { }
+function getEpisodesOfShow(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, axios_1.default.get("http://api.tvmaze.com/shows/".concat(id, "/episodes"))];
+                case 1:
+                    response = _a.sent();
+                    return [2 /*return*/, response.data.map(function (episode) {
+                            return {
+                                id: episode.id,
+                                name: episode.name,
+                                season: episode.season,
+                                number: episode.number
+                            };
+                        })];
+            }
+        });
+    });
+}
+/** Given an array of episodes, create a markup for each episode and append to DOM */
+function populateEpisodes(episodes) {
+    $episodesList.empty();
+    for (var _i = 0, episodes_1 = episodes; _i < episodes_1.length; _i++) {
+        var episode = episodes_1[_i];
+        var $episode = $("<li>".concat(episode.name, " (season ").concat(episode.season, ",\n      number ").concat(episode.number, ")</li>"));
+        $episodesList.append($episode);
+    }
+    $episodesArea.show();
+}
+/** Handle episode button click: get episodes from API and display.
+ *    Shows episodes area and lists episodes under currently selected show
+ */
+function searchForEpisodesAndDisplay(evt) {
+    return __awaiter(this, void 0, void 0, function () {
+        var id, episodes, mediaClass;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    evt.preventDefault();
+                    id = $(evt.target).closest('.Show').data('show-id');
+                    return [4 /*yield*/, getEpisodesOfShow(id)];
+                case 1:
+                    episodes = _a.sent();
+                    populateEpisodes(episodes);
+                    mediaClass = $(evt.target).closest('.media-body');
+                    mediaClass.append($episodesArea);
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+//had to do event delegation to get episodes to display
+$showsList.on('click', '.Show-getEpisodes', searchForEpisodesAndDisplay);
 
 
 /***/ })

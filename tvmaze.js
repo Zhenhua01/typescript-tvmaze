@@ -12866,7 +12866,7 @@ function getEpisodesOfShow(id) {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.get("http://api.tvmaze.com/shows/".concat(id, "/episodes"))];
+                case 0: return [4 /*yield*/, axios_1.default.get("".concat(TVMAZE_API_URL, "/shows/").concat(id, "/episodes"))];
                 case 1:
                     response = _a.sent();
                     return [2 /*return*/, response.data.map(function (episode) {

@@ -12803,12 +12803,13 @@ function getShowsByTerm(term) {
                 case 1:
                     response = _a.sent();
                     return [2 /*return*/, response.data.map(function (result) {
+                            var _a;
                             var show = result.show;
                             return {
                                 id: show.id,
                                 name: show.name,
                                 summary: show.summary,
-                                image: show.image ? show.image.medium : MISSING_IMAGE_URL,
+                                image: ((_a = show.image) === null || _a === void 0 ? void 0 : _a.medium) || MISSING_IMAGE_URL
                             };
                         })];
             }
@@ -12886,7 +12887,7 @@ function populateEpisodes(episodes) {
     $episodesList.empty();
     for (var _i = 0, episodes_1 = episodes; _i < episodes_1.length; _i++) {
         var episode = episodes_1[_i];
-        var $episode = $("<li>".concat(episode.name, " (season ").concat(episode.season, ",\n      number ").concat(episode.number, ")</li>"));
+        var $episode = $("<li>\n        ".concat(episode.name, "\n        (season ").concat(episode.season, ",\n        episode ").concat(episode.number, ")\n      </li>"));
         $episodesList.append($episode);
     }
     $episodesArea.show();
@@ -12896,7 +12897,7 @@ function populateEpisodes(episodes) {
  */
 function searchForEpisodesAndDisplay(evt) {
     return __awaiter(this, void 0, void 0, function () {
-        var id, episodes, mediaClass;
+        var id, episodes;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -12906,14 +12907,11 @@ function searchForEpisodesAndDisplay(evt) {
                 case 1:
                     episodes = _a.sent();
                     populateEpisodes(episodes);
-                    mediaClass = $(evt.target).closest('.media-body');
-                    mediaClass.append($episodesArea);
                     return [2 /*return*/];
             }
         });
     });
 }
-//had to do event delegation to get episodes to display
 $showsList.on('click', '.Show-getEpisodes', searchForEpisodesAndDisplay);
 
 

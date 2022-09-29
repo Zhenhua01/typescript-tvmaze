@@ -9,11 +9,12 @@ const $episodesList = $('#episodesList');
 const MISSING_IMAGE_URL = "https://tinyurl.com/missing-tv";
 const TVMAZE_API_URL = "http://api.tvmaze.com/";
 
+
 interface ShowInterface {
   id: number;
   name: string;
   summary: string;
-  image: { medium: string };
+  image: { medium: string } | null;
 }
 
 interface EpisodeInterface {
@@ -31,7 +32,6 @@ interface EpisodeInterface {
  */
 
 async function getShowsByTerm(term: string): Promise<ShowInterface[]> {
-  // ADD: Remove placeholder & make request to TVMaze search shows API.
   const response = await axios({
     baseURL: TVMAZE_API_URL,
     url: "search/shows",
@@ -41,13 +41,13 @@ async function getShowsByTerm(term: string): Promise<ShowInterface[]> {
     },
   });
 
-  return response.data.map((result: { show: ShowInterface }) => {
+  return response.data.map((result: { show: ShowInterface; }) => {
     const show = result.show;
     return {
       id: show.id,
       name: show.name,
       summary: show.summary,
-      image: show.image ? show.image.medium : MISSING_IMAGE_URL,
+      image: show.image?.medium || MISSING_IMAGE_URL
     };
   });
 }
@@ -86,7 +86,7 @@ function populateShows(shows: ShowInterface[]) {
  *    Hide episodes area (that only gets shown if they ask for episodes)
  */
 
-async function searchForShowAndDisplay() {
+async function searchForShowAndDisplay(): Promise<void> {
   const term: string = $("#searchForm-term").val() as string;
   const shows = await getShowsByTerm(term);
 
@@ -94,7 +94,7 @@ async function searchForShowAndDisplay() {
   populateShows(shows);
 }
 
-$searchForm.on("submit", async function (evt) {
+$searchForm.on("submit", async function (evt: JQuery.SubmitEvent) {
   evt.preventDefault();
   await searchForShowAndDisplay();
 });
@@ -119,11 +119,17 @@ async function getEpisodesOfShow(id: number): Promise<EpisodeInterface[]> {
 
 /** Given an array of episodes, create a markup for each episode and append to DOM */
 
-function populateEpisodes(episodes: EpisodeInterface[]) { 
+function populateEpisodes(episodes: EpisodeInterface[]) {
   $episodesList.empty();
   for (let episode of episodes) {
-    const $episode = $(`<li>${episode.name} (season ${episode.season},
-      number ${episode.number})</li>`);
+    const $episode = $(
+      `<li>
+        ${episode.name}
+        (season ${episode.season},
+        episode ${episode.number})
+      </li>`
+      );
+
     $episodesList.append($episode);
   }
   $episodesArea.show();
@@ -133,15 +139,13 @@ function populateEpisodes(episodes: EpisodeInterface[]) {
  *    Shows episodes area and lists episodes under currently selected show
  */
 
-  async function searchForEpisodesAndDisplay (evt: JQuery.ClickEvent) {
-    evt.preventDefault();
-    const id = $(evt.target).closest('.Show').data('show-id');
-    const episodes = await getEpisodesOfShow(id);
-    populateEpisodes(episodes);
-    const mediaClass = $(evt.target).closest('.media-body')
-    mediaClass.append($episodesArea);
-  }
-  
-  //had to do event delegation to get episodes to display
-  
-  $showsList.on('click','.Show-getEpisodes', searchForEpisodesAndDisplay);
+async function searchForEpisodesAndDisplay(evt: JQuery.ClickEvent): Promise<void> {
+  evt.preventDefault();
+
+  const id = $(evt.target).closest('.Show').data('show-id');
+  const episodes = await getEpisodesOfShow(id);
+  populateEpisodes(episodes);
+
+}
+
+$showsList.on('click', '.Show-getEpisodes', searchForEpisodesAndDisplay);

@@ -12867,7 +12867,7 @@ function getEpisodesOfShow(id) {
         var response;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, axios_1.default.get("".concat(TVMAZE_API_URL, "/shows/").concat(id, "/episodes"))];
+                case 0: return [4 /*yield*/, axios_1.default.get("".concat(TVMAZE_API_URL, "shows/").concat(id, "/episodes"))];
                 case 1:
                     response = _a.sent();
                     return [2 /*return*/, response.data.map(function (episode) {
@@ -12887,7 +12887,7 @@ function populateEpisodes(episodes) {
     $episodesList.empty();
     for (var _i = 0, episodes_1 = episodes; _i < episodes_1.length; _i++) {
         var episode = episodes_1[_i];
-        var $episode = $("<li>\n        ".concat(episode.name, "\n        (season ").concat(episode.season, ",\n        episode ").concat(episode.number, ")\n      </li>"));
+        var $episode = $("<li>\n        ".concat(episode.name, "\n        (Season ").concat(episode.season, ",\n        Episode ").concat(episode.number, ")\n      </li>"));
         $episodesList.append($episode);
     }
     $episodesArea.show();
@@ -12901,7 +12901,6 @@ function searchForEpisodesAndDisplay(evt) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    evt.preventDefault();
                     id = $(evt.target).closest('.Show').data('show-id');
                     return [4 /*yield*/, getEpisodesOfShow(id)];
                 case 1:

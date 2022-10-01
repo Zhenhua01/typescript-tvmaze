@@ -87,7 +87,7 @@ function populateShows(shows: ShowInterface[]) {
  */
 
 async function searchForShowAndDisplay(): Promise<void> {
-  const term: string = $("#searchForm-term").val() as string;
+  const term = $("#searchForm-term").val() as string;
   const shows = await getShowsByTerm(term);
 
   $episodesArea.hide();
@@ -105,7 +105,7 @@ $searchForm.on("submit", async function (evt: JQuery.SubmitEvent) {
  */
 
 async function getEpisodesOfShow(id: number): Promise<EpisodeInterface[]> {
-  const response = await axios.get(`${TVMAZE_API_URL}/shows/${id}/episodes`);
+  const response = await axios.get(`${TVMAZE_API_URL}shows/${id}/episodes`);
 
   return response.data.map((episode: EpisodeInterface) => {
     return {
@@ -125,8 +125,8 @@ function populateEpisodes(episodes: EpisodeInterface[]) {
     const $episode = $(
       `<li>
         ${episode.name}
-        (season ${episode.season},
-        episode ${episode.number})
+        (Season ${episode.season},
+        Episode ${episode.number})
       </li>`
       );
 
@@ -140,7 +140,6 @@ function populateEpisodes(episodes: EpisodeInterface[]) {
  */
 
 async function searchForEpisodesAndDisplay(evt: JQuery.ClickEvent): Promise<void> {
-  evt.preventDefault();
 
   const id = $(evt.target).closest('.Show').data('show-id');
   const episodes = await getEpisodesOfShow(id);
